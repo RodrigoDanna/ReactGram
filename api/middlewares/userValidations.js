@@ -40,6 +40,21 @@ const userCreateValidation = () => {
   ]
 }
 
+const loginValidation = () => {
+  return [
+    body("email")
+        .isString()
+        .withMessage("E-mail required.")
+        .isEmail()
+        .withMessage("The e-mail is not valid."),
+
+    body("password")
+      .isString()
+      .withMessage("Password required.")
+  ]
+}
+
 module.exports = {
-  userCreateValidation
+  userCreateValidation,
+  loginValidation
 }
