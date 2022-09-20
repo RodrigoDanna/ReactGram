@@ -1,4 +1,5 @@
 const {body} = require("express-validator");
+const User = require("../models/User")
 
 const userCreateValidation = () => {
   return [
@@ -12,7 +13,14 @@ const userCreateValidation = () => {
       .isString()
       .withMessage("E-mail required.")
       .isEmail()
-      .withMessage("The e-mail is not valid."),
+      .withMessage("The e-mail is not valid.")
+      .custom(async value => {
+        return User.findOne({email: value}).then((res) => {
+          if(res){
+            return Promise.reject("An account with this email already exists.");
+          }
+        })
+      }),
 
     body("password")
       .isString()
@@ -25,7 +33,7 @@ const userCreateValidation = () => {
       .withMessage("Password confirmation required.")
       .custom((value, {req}) => {
         if(value != req.body.password){
-          throw new Erro("Password fields don't match.")
+          throw new Error("Password fields don't match.")
         }
         return true;
       })
