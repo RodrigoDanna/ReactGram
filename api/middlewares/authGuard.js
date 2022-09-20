@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const jwtSecret = process.env.JWT_SECRET;
 
 const authGuard = async (req, res, next) => {
-  const authHeader = req.header["authorization"];
+  const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
   // Check if header has a token
@@ -20,4 +20,6 @@ const authGuard = async (req, res, next) => {
   } catch (error) {
     res.status(401).json({errors: ["Invalid token."]});
   }
-}
+};
+
+module.exports = authGuard;
