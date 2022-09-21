@@ -3,6 +3,8 @@ const User = require("../models/User")
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const mongoose = require("mongoose");
+
 const jwtSecret = process.env.JWT_SECRET;
 
 // Generate user token
@@ -13,8 +15,8 @@ const generateToken = (id) => {
 }
 
 // Register user and sign in
-const register = async(req, res) => {
-  const {name, email, password} = req.body;
+const register = async (req, res) => {
+  const { name, email, password } = req.body;
 
   // Generate password hash
   const salt = await bcrypt.genSalt();
@@ -28,8 +30,8 @@ const register = async(req, res) => {
   })
 
   // is user was created successfully, return token
-  if(!newUser){
-    res.status(422).json({erros: ["An unexpected error has occurred, please try again."]})
+  if (!newUser) {
+    res.status(422).json({ erros: ["An unexpected error has occurred, please try again."] })
     return;
   }
 
@@ -43,17 +45,17 @@ const login = async (req, res) => {
 
   const error_message = "User or password is incorrect."
 
-  const { email, password} = req.body;
+  const { email, password } = req.body;
 
-  const user = await User.findOne({email});
+  const user = await User.findOne({ email });
 
-  if(!user){
-    return res.status(422).json({errors: [error_message]});
+  if (!user) {
+    return res.status(422).json({ errors: [error_message] });
   }
 
   const password_match = await bcrypt.compare(password, user.password);
-  if(!password_match){
-    return res.status(422).json({errors: [error_message]});
+  if (!password_match) {
+    return res.status(422).json({ errors: [error_message] });
   }
 
   return res.status(201).json({
@@ -64,13 +66,45 @@ const login = async (req, res) => {
 }
 
 // Get current logged in user
-const getCurrentUser = async(req, res) => {
+const getCurrentUser = async (req, res) => {
   const user = req.user;
   res.status(200).json(user);
 }
 
 // Update user data
-const update = async(req, res) =>{
+const update = async (req, res) => {
+  const { name, password, bio } = req.body;
+
+  let profileImage = null;
+
+  if (req.file) {
+    profileImage = req.file.filename;
+  }
+
+  const user = await User.findById(mongoose.Types.ObjectId(req.user._id)).select("-password");
+
+  if (name) {
+    user.name = name
+  }
+
+  if (password) {
+    const salt = await bcrypt.genSalt();
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    user.password = passwordHash;
+  }
+
+  if (profileImage) {
+    user.profileImage = profileImage;
+  }
+
+  if (bio) {
+    user.bio = bio;
+  }
+
+  await user.save();
+
+  res.status(200).json(user);
 
 }
 
