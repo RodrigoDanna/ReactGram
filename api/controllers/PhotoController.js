@@ -21,11 +21,10 @@ const insertPhoto = async(req, res) => {
     })
 
     if(!newPhoto){
-        res.status(422).json({errors: ["An unexpected error has occurred. Please try again."]})
-        return;
+        return res.status(422).json({errors: ["An unexpected error has occurred. Please try again."]})
     }
 
-    res.status(201).json(newPhoto);
+    return res.status(201).json(newPhoto);
 }
 
 const deletePhoto = async(req, res) => {
@@ -44,9 +43,9 @@ const deletePhoto = async(req, res) => {
 
         await Photo.findByIdAndDelete(photo._id);
         
-        res.status(200).json({id: photo._id, message: "Photo deleted successfully."});
+        return res.status(200).json({id: photo._id, message: "Photo deleted successfully."});
     } catch (error) {
-        res.status(404).json({errors: ["Photo not found."]});
+       return  res.status(404).json({errors: ["Photo not found."]});
     }
 }
 
@@ -65,14 +64,44 @@ const getUserPhotos = async(req, res) => {
 
 const getPhotoById = async(req, res) => {
     const {id} = req.params;
-    const photo = await Photo.findById(mongoose.Types.ObjectId(id));
 
-    if(!photo){
-        res.status(404).json({errors: ["Photo not found."]});
-        return;
+    try {
+        const photo = await Photo.findById(mongoose.Types.ObjectId(id));
+
+        if(!photo){
+            return res.status(404).json({errors: ["Photo not found."]});
+        }
+
+        return res.status(200).json(photo);
+        
+    } catch (error) {
+        return res.status(404).json({errors: ["Photo not found."]});
     }
+}
 
-    return res.status(200).json(photo);
+const updatePhoto = async(req, res) => {
+    const {id} = req.params;
+    const {title} = req.body;
+
+    const reqUser = req.user;
+
+    try {
+        const photo = await Photo.findById(mongoose.Types.ObjectId(id));
+
+        if(!photo || !photo.userId.equals(reqUser._id)){
+            return res.status(404).json({errors: ["Photo not found."]});
+        }
+
+        if(title){
+            photo.title = title;
+        }
+
+        await photo.save();
+
+        return res.status(200).json({photo, message: "Photo updated successfully."});
+    } catch (error) {
+        return res.status(404).json({errors: ["Photo not found."]});
+    }
 }
 
 module.exports = {
@@ -80,5 +109,6 @@ module.exports = {
     deletePhoto,
     getAllPhotos,
     getUserPhotos,
-    getPhotoById
+    getPhotoById,
+    updatePhoto
 }
