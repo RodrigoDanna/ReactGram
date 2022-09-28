@@ -6,8 +6,8 @@ const { register, login, getCurrentUser, update, getUserById } = require("../con
 
 //Middlewares
 const validate = require("../middlewares/handleValidation");
-const { userCreateValidation, loginValidation, userUpdateValidation } = require("../middlewares/userValidations");
 const authGuard = require("../middlewares/authGuard");
+const { userCreateValidation, loginValidation, userUpdateValidation } = require("../middlewares/userValidations");
 const { imageUpload } = require("../middlewares/imageUpload");
 
 //Routes
