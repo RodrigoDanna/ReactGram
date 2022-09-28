@@ -22,7 +22,7 @@ const register = async (req, res) => {
   const salt = await bcrypt.genSalt();
   const passwordHash = await bcrypt.hash(password, salt);
 
-  // Crate user
+  // Create user
   const newUser = await User.create({
     name,
     email,
