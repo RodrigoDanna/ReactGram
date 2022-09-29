@@ -3,10 +3,13 @@ const User = require("../models/User");
 
 const mongoose = require("mongoose");
 
+const fs = require("fs");
+
 // Insert
 const insertPhoto = async(req, res) => {
     const {title} = req.body
     const image = req.file.filename;
+    const path = req.file.path;
 
     const reqUser = req.user;
 
@@ -16,6 +19,7 @@ const insertPhoto = async(req, res) => {
     const newPhoto = await Photo.create({
         image,
         title,
+        path,
         userId: user._id,
         userName: user.name
     })
@@ -41,9 +45,18 @@ const deletePhoto = async(req, res) => {
             return;
         }
 
-        await Photo.findByIdAndDelete(photo._id);
-        
-        return res.status(200).json({id: photo._id, message: "Photo deleted successfully."});
+        if(photo.path){
+            fs.unlink(photo.path, (err => {  //delete file from directory
+                if (err) { 
+                    console.error(err) 
+                };
+            }))
+        }
+
+        photo.remove();
+
+        return res.status(200).json({id: photo._id, message: "Photo deleted successfully."});   
+
     } catch (error) {
        return  res.status(404).json({errors: ["Photo not found."]});
     }

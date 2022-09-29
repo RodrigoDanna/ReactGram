@@ -33,4 +33,4 @@ const imageUpload = multer({
 module.exports = {
   imageStorage,
   imageUpload
- };
+};
