@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken");
 
 const mongoose = require("mongoose");
 
+const fs = require("fs");
+
 const jwtSecret = process.env.JWT_SECRET;
 
 // Generate user token
@@ -76,9 +78,12 @@ const update = async (req, res) => {
   const { name, password, bio } = req.body;
 
   let profileImage = null;
+  let oldPhoto = null;
 
   if (req.file) {
+    console.log("new image");
     profileImage = req.file.filename;
+    profileImagePath = req.file.path;
   }
 
   const user = await User.findById(mongoose.Types.ObjectId(req.user._id)).select("-password");
@@ -95,14 +100,25 @@ const update = async (req, res) => {
   }
 
   if (profileImage) {
+    oldPhoto = user.profileImagePath
     user.profileImage = profileImage;
-  }
+    user.profileImagePath = profileImagePath;
+  } 
 
   if (bio) {
     user.bio = bio;
   }
 
   await user.save();
+
+  //delete old photo file from directory
+  if(oldPhoto){
+    fs.unlink(oldPhoto, (err => {  
+      if (err) { 
+          console.error(err) 
+      };
+    }))
+  }
 
   res.status(200).json(user);
 }
