@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 import "./Auth.css";
 
-function Login() {
+const Login = () => {
   return (
     <div>Login</div>
   )
