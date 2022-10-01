@@ -5,9 +5,22 @@ import "./Auth.css";
 import { Link } from 'react-router-dom';
 
 const Register = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const user = {
+      name,
+      email,
+      password,
+      confirmPassword
+    };
+
+    console.log(user);
   }
 
   return (
@@ -17,10 +30,10 @@ const Register = () => {
       <p className="subtitle">Register now and be part of ReactGram</p>
 
       <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="Name" />
-        <input type="email" placeholder="Email" />
-        <input type="password" placeholder="Password" />
-        <input type="password" placeholder="Confirm Password" />
+        <input type="text" placeholder="Name" onChange={(e) => setName(e.target.value)} value={name} />
+        <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} value={email} />
+        <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} value={password} />
+        <input type="password" placeholder="Confirm Password" onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} />
         <input type="submit" value="Register" />
       </form>
 
