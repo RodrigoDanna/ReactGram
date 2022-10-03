@@ -30,4 +30,5 @@ export const requestConfig = (method, data, token = null, image = null) => {
     }
 
     return config;
+    
 }
