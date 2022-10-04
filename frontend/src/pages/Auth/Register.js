@@ -1,14 +1,23 @@
+// @ts-nocheck
 import React, { useState, useEffect } from "react";
 import "./Auth.css";
 
 // Components
 import { Link } from 'react-router-dom';
 
+//Redux
+import { register, reset } from "../../slices/authSlice";
+import { useSelector, useDispatch } from "react-redux";
+
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const dispatch = useDispatch();
+
+  const {loading, error} = useSelector((state) => state.auth);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,8 +29,12 @@ const Register = () => {
       confirmPassword
     };
 
-    console.log(user);
-  }
+    dispatch(register(user));
+  };
+
+  useEffect(() => {
+    dispatch(reset());
+  }, [dispatch])
 
   return (
     <div id="register">
