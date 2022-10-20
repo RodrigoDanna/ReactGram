@@ -4,6 +4,7 @@ import "./Auth.css";
 
 // Components
 import { Link } from 'react-router-dom';
+import Message from '../../components/Message';
 
 //Redux
 import { register, reset } from "../../slices/authSlice";
@@ -43,11 +44,13 @@ const Register = () => {
       <p className="subtitle">Register now and be part of ReactGram</p>
 
       <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="Name" onChange={(e) => setName(e.target.value)} value={name} />
+      <input type="text" placeholder="Name" onChange={(e) => setName(e.target.value)} value={name} />
         <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} value={email} />
         <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} value={password} />
         <input type="password" placeholder="Confirm Password" onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} />
-        <input type="submit" value="Register" />
+        {!loading && <input type="submit" value="Register" />}
+        {loading && <input type="submit" value="Please, wait..." disabled/>}
+        {error && <Message msg={error} type="error"/>}
       </form>
 
       <p>Already have an account? <Link to="/login">Click here.</Link></p>
